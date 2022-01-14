@@ -5,14 +5,14 @@ import logo from "./../images/logo.JPG";
 
 class NavBar extends Component {
   state = {
-    isAuthenticated: false
+    isAuthenticated: false,
   };
   componentDidMount() {
     M.AutoInit();
     const token = localStorage.getItem("lcl-stg-tkn");
     if (token) {
       this.setState({
-        isAuthenticated: true
+        isAuthenticated: true,
       });
     }
   }
@@ -26,7 +26,7 @@ class NavBar extends Component {
   logout = () => {
     localStorage.removeItem("lcl-stg-tkn");
     this.setState({
-      isAuthenticated: false
+      isAuthenticated: false,
     });
   };
   closeSidenav = () => {
@@ -60,7 +60,10 @@ class NavBar extends Component {
                     <Link to="/dashboard">Manage Appointments</Link>
                   </li>
                   <li>
-                    <Link to="/about">About Us</Link>
+                    <Link to="/about">Create User</Link>
+                  </li>
+                  <li>
+                    <Link to="/user">Patients</Link>
                   </li>
                   {isAuthenticated ? (
                     <li>

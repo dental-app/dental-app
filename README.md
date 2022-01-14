@@ -7,3 +7,4 @@ MERN stack web application built for dental clinics to manage their client appoi
 
 ## Application Demo:
 ![Application Demo](application-demo.gif)
+# dental-app

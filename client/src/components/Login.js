@@ -8,7 +8,7 @@ class Login extends Component {
     password: "",
     isAuthenticated: false,
     user: null,
-    token: null
+    token: null,
   };
   componentDidMount() {
     M.AutoInit();
@@ -17,25 +17,7 @@ class Login extends Component {
   login = () => {
     const { username, password } = this.state;
     const newUser = { username, password };
-
-    axios
-      .post("/login", newUser)
-      .then(res => {
-        localStorage.setItem("lcl-stg-tkn", res.data.token);
-        this.setState({
-          isAuthenticated: true,
-          user: res.data.user,
-          token: localStorage.getItem("lcl-stg-tkn")
-        });
-        this.props.verifyAuth(this.state.isAuthenticated);
-        this.props.history.push("/dashboard");
-      })
-      .catch(err =>
-        M.toast({
-          html: err.response.data.msg,
-          classes: "red darken-1 rounded"
-        })
-      );
+    this.props.history.push("/dashboard");
   };
 
   render() {
@@ -58,7 +40,7 @@ class Login extends Component {
                       type="text"
                       className="validate"
                       value={username}
-                      onChange={e =>
+                      onChange={(e) =>
                         this.setState({ username: e.target.value })
                       }
                     />
@@ -71,7 +53,7 @@ class Login extends Component {
                       type="password"
                       className="validate"
                       value={password}
-                      onChange={e =>
+                      onChange={(e) =>
                         this.setState({ password: e.target.value })
                       }
                     />

@@ -1,11 +1,16 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const path = require('path');
+const path = require("path");
 const jwt = require("jsonwebtoken");
 const Appointment = require("./models/appointment");
 const User = require("./models/user");
-const auth = require("./middleware/auth");
+const cloudinary = require("cloudinary").v2;
 require("dotenv").config();
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const app = express();
 
@@ -13,21 +18,32 @@ app.use(express.json());
 const PORT = process.env.PORT || 5000;
 
 //Connect to MongoDB
-const db = process.env.MONGO_URI;
+const db =
+  "mongodb+srv://ta7an:3asba@ta7an.vzvo0.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 
 mongoose
   .connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("MongoDB connected..."))
-  .catch(error => console.log(error));
+  .catch((error) => console.log(error));
 
 //@route GET /appointments
 //@desc  Get all appointments
 //@access Private
-app.get("/appointments", auth, (req, res) => {
+app.get("/appointments", (req, res) => {
   Appointment.find()
     .sort({ date: 1 })
-    .then(appointments => res.json(appointments))
-    .catch(err =>
+    .then((appointments) => res.json(appointments))
+    .catch((err) =>
+      res
+        .status(500)
+        .json({ msg: "Could not get the appointments. Please try again." })
+    );
+});
+app.get("/users", (req, res) => {
+  User.find()
+    .sort({ date: 1 })
+    .then((user) => res.json(user))
+    .catch((err) =>
       res
         .status(500)
         .json({ msg: "Could not get the appointments. Please try again." })
@@ -37,8 +53,113 @@ app.get("/appointments", auth, (req, res) => {
 //@route POST /
 //@desc  Add new appointment
 //@access Public
+app.put("/user/:id", (req, res) => {
+  const {
+    fullname,
+    cin,
+    town,
+    adress,
+    postalCode,
+    cellphone,
+    date,
+    time,
+    maturity,
+    sex,
+    civility,
+    description,
+  } = req.body;
+  User.findOneAndUpdate(req.params.id, {
+    fullname,
+    cin,
+    town,
+    adress,
+    postalCode,
+    cellphone,
+    date,
+    time,
+    maturity,
+    sex,
+    civility,
+    description,
+  })
+
+    .then((user) => res.json({ msg: "User edited succesfully" }))
+    .catch((err) =>
+      res.status(500).json({ msg: "Something went wrong. Please try again." })
+    )
+
+    .catch((err) => res.status(404).json({ msg: "User not found" }));
+});
+
+//@route Delete /appointment/:id
+//@desc  Delete an appointment
+//@access Private
+app.delete("/user/:id", (req, res) => {
+  User.findById(req.params.id)
+    .then((user) =>
+      user.remove().then(() => res.json({ msg: "User removed succesfully." }))
+    )
+    .catch((err) => res.status(404).json({ msg: "User not found" }));
+});
+app.post("/add-user", (req, res) => {
+  const {
+    fullname,
+    cin,
+    town,
+    adress,
+    postalCode,
+    cellphone,
+    date,
+    time,
+    maturity,
+    sex,
+    civility,
+    description,
+    data,
+  } = req.body;
+  const validateDateTime = async (date, time) => {
+    const existingAppointment = await Appointment.findOne({ date, time });
+    const uploadResponse = await cloudinary.uploader.upload(data, {
+      upload_preset: "Aymen",
+    });
+    console.log(uploadResponse);
+    if (existingAppointment) {
+      res.status(400).json({
+        msg: "Please choose another date or time. This one is not available.",
+      });
+    } else {
+      saveUser();
+    }
+  };
+
+  validateDateTime(date, time);
+  const saveUser = () => {
+    //Construct appointment
+    const newUser = new User({
+      fullname,
+      cin,
+      town,
+      adress,
+      postalCode,
+      cellphone,
+      date,
+      time,
+      maturity,
+      sex,
+      civility,
+      description,
+    });
+    // add to database
+    newUser
+      .save()
+      .then((user) => res.json({ msg: "User added succesfully" }))
+      .catch((err) =>
+        res.status(500).json({ msg: "Something went wrong. Please try again." })
+      );
+  };
+});
 app.post("/add-appointment", (req, res) => {
-  const { fullname, cellphone, date, time, description } = req.body;
+  const { fullname, cellphone, price, date, time, description } = req.body;
   if (!fullname || !cellphone || !date || !time || !description) {
     return res.status(400).json({ msg: "All fields are required" });
   }
@@ -46,11 +167,9 @@ app.post("/add-appointment", (req, res) => {
   const validateDateTime = async (date, time) => {
     const existingAppointment = await Appointment.findOne({ date, time });
     if (existingAppointment) {
-      res
-        .status(400)
-        .json({
-          msg: "Please choose another date or time. This one is not available."
-        });
+      res.status(400).json({
+        msg: "Please choose another date or time. This one is not available.",
+      });
     } else {
       saveAppointment();
     }
@@ -63,14 +182,15 @@ app.post("/add-appointment", (req, res) => {
       fullname,
       cellphone,
       date,
+      price,
       time,
-      description
+      description,
     });
     // add to database
     newAppointment
       .save()
-      .then(appointment => res.json({ msg: "Appointment added succesfully" }))
-      .catch(err =>
+      .then((appointment) => res.json({ msg: "Appointment added succesfully" }))
+      .catch((err) =>
         res.status(500).json({ msg: "Something went wrong. Please try again." })
       );
   };
@@ -79,38 +199,38 @@ app.post("/add-appointment", (req, res) => {
 //@route PUT /appointment/:id
 //@desc  Edit an appointment
 //@access Private
-app.put("/appointment/:id", auth, (req, res) => {
+app.put("/appointment/:id", (req, res) => {
   Appointment.findById(req.params.id)
-    .then(appointment => {
+    .then((appointment) => {
       //New values
       const { date, time } = req.body;
       (appointment.date = date),
         (appointment.time = time),
         appointment
           .save()
-          .then(appointment =>
+          .then((appointment) =>
             res.json({ msg: "Appointment edited succesfully" })
           )
-          .catch(err =>
+          .catch((err) =>
             res
               .status(500)
               .json({ msg: "Something went wrong. Please try again." })
           );
     })
-    .catch(err => res.status(404).json({ msg: "Appointment not found" }));
+    .catch((err) => res.status(404).json({ msg: "Appointment not found" }));
 });
 
 //@route Delete /appointment/:id
 //@desc  Delete an appointment
 //@access Private
-app.delete("/appointment/:id", auth, (req, res) => {
+app.delete("/appointment/:id", (req, res) => {
   Appointment.findById(req.params.id)
-    .then(appointment =>
+    .then((appointment) =>
       appointment
         .remove()
         .then(() => res.json({ msg: "Appointment removed succesfully." }))
     )
-    .catch(err => res.status(404).json({ msg: "Appointment not found" }));
+    .catch((err) => res.status(404).json({ msg: "Appointment not found" }));
 });
 
 //@route POST /login
@@ -123,7 +243,7 @@ app.post("/login", (req, res) => {
     return res.status(400).json({ msg: "Please enter all fields." });
   }
 
-  User.findOne({ username }).then(user => {
+  User.findOne({ username }).then((user) => {
     if (!user) return res.status(400).json({ msg: "User does not exist." });
 
     if (user.password !== password)
@@ -139,23 +259,22 @@ app.post("/login", (req, res) => {
           token,
           user: {
             id: user._id,
-            username: user.username
-          }
+            username: user.username,
+          },
         });
       }
     );
   });
 });
 
-  //Serve static assets if in production
-  if(process.env.NODE_ENV === 'production'){
-    app.use(express.static('client/build'));
+//Serve static assets if in production
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"));
 
-    app.get('*', (req, res)=>{
-      res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-    });
-  };
-
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

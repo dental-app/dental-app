@@ -9,52 +9,54 @@ class Main extends Component {
     cellphone: "",
     date: "",
     time: "",
+    price: "",
     description: "",
     errorMessage: "",
-    successMessage: ""
+    successMessage: "",
   };
   componentDidMount() {
     M.AutoInit();
   }
 
-  handleChange = e => {
+  handleChange = (e) => {
     this.setState({
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  makeAppointment = e => {
+  makeAppointment = (e) => {
     e.preventDefault();
 
-    const { fullname, cellphone, date, time, description } = this.state;
+    const { fullname, cellphone, date, price, time, description } = this.state;
     const newAppointment = {
       fullname,
       cellphone,
       date,
+      price,
       time,
-      description
+      description,
     };
     axios
       .post("/add-appointment", newAppointment)
-      .then(result => {
+      .then((result) => {
         this.setState({
           successMessage: result.data.msg,
           fullname: "",
           cellphone: "",
           date: "",
           time: "",
-          description: ""
+          description: "",
         });
         M.toast({
           html: this.state.successMessage,
-          classes: "green darken-1 rounded"
+          classes: "green darken-1 rounded",
         });
       })
-      .catch(error => {
+      .catch((error) => {
         this.setState({ errorMessage: error.response.data.msg });
         M.toast({
           html: this.state.errorMessage,
-          classes: "red darken-1 rounded"
+          classes: "red darken-1 rounded",
         });
       });
   };
@@ -63,37 +65,19 @@ class Main extends Component {
       fullname: "",
       cellphone: "",
       date: "",
+      price: "",
       time: "",
-      description: ""
+      description: "",
     });
   };
   render() {
-    const { fullname, cellphone, date, time, description } = this.state;
+    const { fullname, cellphone, date, price, time, description } = this.state;
     return (
       <div>
         <img src={bg} className="bg" alt="background" />
         <div className="container note">
           <div className="row">
-            <div className="col s12 m6">
-              <h2>Dont lose time</h2>
-              <h2>Check your teeth now</h2>
-              <h2>
-                Book an appointment{" "}
-                <i
-                  className="material-icons hide-on-small-only"
-                  style={{ fontSize: "38px" }}
-                >
-                  arrow_forward
-                </i>
-                <i
-                  className="material-icons show-on-small hide-on-med-and-up"
-                  style={{ fontSize: "38px", textAlign: "center" }}
-                >
-                  arrow_downward
-                </i>
-              </h2>
-            </div>
-            <div className="col s12 m6">
+            <div className="col s12 m12">
               <div className="card blue-grey darken-1 center-align">
                 <div className="card-content white-text">
                   <form>
@@ -133,6 +117,7 @@ class Main extends Component {
                       />
                       <label htmlFor="date">Date</label>
                     </div>
+
                     <div className="input-field">
                       <i className="material-icons prefix">access_time</i>
                       <input
@@ -144,6 +129,18 @@ class Main extends Component {
                         onChange={this.handleChange}
                       />
                       <label htmlFor="time">Time</label>
+                    </div>
+                    <div className="input-field">
+                      <i className="material-icons prefix">attach_money</i>
+                      <input
+                        id="price"
+                        name="price"
+                        type="number"
+                        value={price}
+                        className="validate"
+                        onChange={this.handleChange}
+                      />
+                      <label htmlFor="cellphone">Price</label>
                     </div>
                     <div className="input-field">
                       <i className="material-icons prefix">description</i>

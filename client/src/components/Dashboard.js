@@ -13,7 +13,7 @@ class Dashboard extends Component {
       filterDate: "",
       appointment: {},
       loading: false,
-      isAuthenticated: false
+      isAuthenticated: false,
     };
     this.dateInput = React.createRef();
     this.timeInput = React.createRef();
@@ -25,66 +25,52 @@ class Dashboard extends Component {
 
   getAppointments = () => {
     const token = localStorage.getItem("lcl-stg-tkn");
-    if (token) {
-      this.setState({
-        loading: true,
-        isAuthenticated: true
-      });
+    // if (token) {
+    //   this.setState({
+    //     loading: true,
+    //     isAuthenticated: true
+    //   });
 
-      axios
-        .get("/appointments", {
-          headers: {
-            "Content-type": "application/json",
-            "x-auth-token": token
-          }
-        })
-        .then(res =>
-          this.setState({
-            appointments: res.data,
-            loading: false
-          })
-        )
-        .catch(err => console.log(err));
-    } else {
-      this.props.history.push("/login");
-    }
-  };
-  deleteAppointment = id => {
     axios
-      .delete(`/appointment/${id}`, {
-        headers: {
-          "Content-type": "application/json",
-          "x-auth-token": localStorage.getItem("lcl-stg-tkn")
-        }
+      .get("/appointments")
+      .then((res) => {
+        this.setState({
+          appointments: res.data,
+          loading: false,
+        });
+        console.log(res.data);
       })
-      .then(res => {
+      .catch((err) => console.log(err));
+    // } else {
+    //   this.props.history.push("/login");
+    // }
+  };
+  deleteAppointment = (id) => {
+    axios
+      .delete(`/appointment/${id}`)
+      .then((res) => {
         const objToDeleteIndex = this.state.appointments.findIndex(
-          obj => obj._id === id
+          (obj) => obj._id === id
         );
         const newItems = [...this.state.appointments];
         newItems.splice(objToDeleteIndex, 1);
         this.setState({ appointments: newItems });
         M.toast({ html: res.data.msg, classes: "green darken-1 rounded" });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
   editAppointment = () => {
     const { _id } = this.state.appointment;
     const updatedValues = {
       date: this.dateInput.current.value,
-      time: this.timeInput.current.value
+      time: this.timeInput.current.value,
     };
 
     axios
-      .put(`/appointment/${_id}`, updatedValues, {
-        headers: {
-          "Content-type": "application/json",
-          "x-auth-token": localStorage.getItem("lcl-stg-tkn")
-        }
-      })
-      .then(res => {
+      .put(`/appointment/${_id}`, updatedValues)
+      .then((res) => {
         const objToEditIndex = this.state.appointments.findIndex(
-          obj => obj._id === _id
+          (obj) => obj._id === _id
         );
         const newItems = [...this.state.appointments];
         newItems[objToEditIndex].date = updatedValues.date;
@@ -93,7 +79,7 @@ class Dashboard extends Component {
 
         M.toast({ html: res.data.msg, classes: "green darken-1 rounded" });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
   render() {
     let nr = 1;
@@ -113,7 +99,7 @@ class Dashboard extends Component {
                 type="text"
                 className="validate"
                 value={filterName}
-                onChange={e => this.setState({ filterName: e.target.value })}
+                onChange={(e) => this.setState({ filterName: e.target.value })}
               />
               <label htmlFor="fullname">
                 <i className="material-icons left">find_in_page</i> Search by
@@ -126,7 +112,7 @@ class Dashboard extends Component {
                 type="text"
                 className="validate"
                 value={filterDate}
-                onChange={e => this.setState({ filterDate: e.target.value })}
+                onChange={(e) => this.setState({ filterDate: e.target.value })}
               />
               <label htmlFor="date">Search by date</label>
             </div>
@@ -143,6 +129,7 @@ class Dashboard extends Component {
                   <th>Full Name</th>
                   <th>Cellphone</th>
                   <th>Date</th>
+                  <th>Price</th>
                   <th>Time</th>
                   <th style={{ width: "300px" }}>Description</th>
                   <th>Actions</th>
@@ -150,16 +137,17 @@ class Dashboard extends Component {
               </thead>
               <tbody>
                 {this.state.appointments
-                  .filter(key =>
+                  .filter((key) =>
                     key.fullname.toLowerCase().includes(filterName)
                   )
-                  .filter(key => key.date.toLowerCase().includes(filterDate))
-                  .map(appointment => (
+                  .filter((key) => key.date.toLowerCase().includes(filterDate))
+                  .map((appointment) => (
                     <tr key={appointment._id}>
                       <td>{nr++}</td>
                       <td>{appointment.fullname}</td>
                       <td>{appointment.cellphone}</td>
                       <td>{appointment.date}</td>
+                      <td>{appointment.price}</td>
                       <td>{appointment.time}</td>
                       <td>{appointment.description}</td>
                       <td>

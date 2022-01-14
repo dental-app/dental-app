@@ -1,32 +1,345 @@
-import React from "react";
-import clinic1 from "../images/clinic-1.jpeg";
-import clinic2 from "../images/clinic-2.jpg";
+import React, { Component } from "react";
+import axios from "axios";
+import M from "materialize-css/dist/js/materialize.min.js";
 
-function AboutUs() {
-  return (
-    <div className="container white-text">
-      <h2 className="green-text">About Us</h2>
-      <p>
-        Lorem Ipsum is simply dummy text of the printing and typesetting
-        industry. Lorem Ipsum has been the industry's standard dummy text ever
-        since the 1500s, when an unknown printer took a galley of type and
-        scrambled it to make a type specimen book. It has survived not only five
-        centuries, but also the leap into electronic typesetting, remaining
-        essentially unchanged. It was popularised in the 1960s with the release
-        of Letraset sheets containing Lorem Ipsum passages, and more recently
-        with desktop publishing software like Aldus PageMaker including versions
-        of Lorem Ipsum.
-      </p>
-      <div className="row">
-        <div className="col m6">
-          <img src={clinic1} alt="clinic-1" className="responsive-img" />
-        </div>
-        <div className="col m6">
-          <img src={clinic2} alt="clinic-2" className="responsive-img" />
+class AboutUs extends Component {
+  state = {
+    fullname: "",
+    cin: "",
+    town: "",
+    adress: "",
+    postalCode: "",
+    cellphone: "",
+    date: "",
+    time: "",
+    maturity: "",
+    sex: "",
+    civility: "",
+    description: "",
+    errorMessage: "",
+    successMessage: "",
+  };
+  componentDidMount() {
+    M.AutoInit();
+  }
+
+  handleChange = (e) => {
+    this.setState({
+      [e.target.name]: e.target.value,
+    });
+    // console.log(this.state.maturity);
+  };
+
+  makeUser = (e) => {
+    e.preventDefault();
+
+    const {
+      fullname,
+      cin,
+      town,
+      adress,
+      postalCode,
+      cellphone,
+      date,
+      time,
+      maturity,
+      sex,
+      civility,
+      description,
+    } = this.state;
+
+    const newUser = {
+      fullname,
+      cin,
+      town,
+      adress,
+      postalCode,
+      cellphone,
+      date,
+      time,
+      maturity,
+      sex,
+      civility,
+      description,
+    };
+    axios
+      .post("/add-User", newUser)
+      .then((result) => {
+        this.setState({
+          successMessage: result.data.msg,
+          fullname: "",
+          cin: "",
+          town: "",
+          adress: "",
+          postalCode: "",
+          cellphone: "",
+          date: "",
+          time: "",
+          maturity: "",
+          sex: "",
+          civility: "",
+          description: "",
+        });
+        M.toast({
+          html: this.state.successMessage,
+          classes: "green darken-1 rounded",
+        });
+      })
+      .catch((error) => {
+        this.setState({ errorMessage: error.response.data.msg });
+        M.toast({
+          html: this.state.errorMessage,
+          classes: "red darken-1 rounded",
+        });
+      });
+  };
+  resetForm = () => {
+    this.setState({
+      fullname: "",
+      cin: "",
+      town: "",
+      adress: "",
+      postalCode: "",
+      cellphone: "",
+      date: "",
+      maturity: "",
+      sex: "",
+      civility: "",
+      description: "",
+    });
+  };
+  render() {
+    const {
+      fullname,
+      cin,
+      town,
+      adress,
+      postalCode,
+      cellphone,
+      date,
+      maturity,
+      sex,
+      civility,
+      description,
+    } = this.state;
+    return (
+      <div>
+        <div className="container note">
+          <div className="row">
+            <div className="col s12 m12">
+              <div className="card blue-grey darken-1 center-align">
+                <div className="card-content white-text">
+                  <form>
+                    <div className="input-field">
+                      <i className="material-icons prefix">account_circle</i>
+                      <input
+                        id="full_name"
+                        name="fullname"
+                        type="text"
+                        value={fullname}
+                        className="validate"
+                        onChange={this.handleChange}
+                      />
+                      <label htmlFor="full_name">Full Name</label>
+                    </div>
+                    <div className="input-field">
+                      <i className="material-icons prefix">contact_mail</i>
+                      <input
+                        id="cin"
+                        name="cin"
+                        type="text"
+                        value={cin}
+                        className="validate"
+                        onChange={this.handleChange}
+                      />
+                      <label htmlFor="full_name">CIN</label>
+                    </div>
+                    <div className="input-field">
+                      <i className="material-icons prefix">place</i>
+                      <input
+                        id="town"
+                        name="town"
+                        type="text"
+                        value={town}
+                        className="validate"
+                        onChange={this.handleChange}
+                      />
+                      <label htmlFor="full_name">Town</label>
+                    </div>
+                    <div className="input-field">
+                      <i className="material-icons prefix">home</i>
+                      <input
+                        id="adress"
+                        name="adress"
+                        type="text"
+                        value={adress}
+                        className="validate"
+                        onChange={this.handleChange}
+                      />
+                      <label htmlFor="full_name">Adress</label>
+                    </div>
+                    <div className="input-field">
+                      <i className="material-icons prefix">local_post_office</i>
+                      <input
+                        id="postalCode"
+                        name="postalCode"
+                        type="text"
+                        value={postalCode}
+                        className="validate"
+                        onChange={this.handleChange}
+                      />
+                      <label htmlFor="full_name">Postal code</label>
+                    </div>
+                    <div className="input-field">
+                      <i className="material-icons prefix">phone</i>
+                      <input
+                        id="cellphone"
+                        name="cellphone"
+                        type="number"
+                        value={cellphone}
+                        className="validate"
+                        onChange={this.handleChange}
+                      />
+                      <label htmlFor="cellphone">Cellphone</label>
+                    </div>
+                    <div className="input-field">
+                      <i className="material-icons prefix">event</i>
+                      <input
+                        id="date"
+                        name="date"
+                        type="date"
+                        className="validate"
+                        value={date}
+                        onChange={this.handleChange}
+                      />
+                      <label htmlFor="date">Date</label>
+                    </div>
+                    <div className="input-field">
+                      <p>
+                        <label>
+                          <input
+                            id="maturity"
+                            name="maturity"
+                            type="radio"
+                            value="Adult"
+                            onChange={this.handleChange}
+                          />{" "}
+                          <span>adult</span>
+                        </label>
+                      </p>
+                      <p>
+                        <label>
+                          <input
+                            id="maturity"
+                            name="maturity"
+                            value="Kid"
+                            class="with-gap"
+                            onChange={this.handleChange}
+                            type="radio"
+                          />
+                          <span>kid</span>
+                        </label>
+                      </p>
+                      <label htmlFor="description">maturity</label>
+                    </div>
+                    <div className="input-field">
+                      {" "}
+                      <p>
+                        <label>
+                          <input
+                            id="sex"
+                            name="sex"
+                            value="Male"
+                            class="with-gap"
+                            onChange={this.handleChange}
+                            type="radio"
+                          />
+                          <span>male</span>
+                        </label>
+                      </p>
+                      <p>
+                        <label>
+                          <input
+                            id="sex"
+                            name="sex"
+                            value="Female"
+                            class="with-gap"
+                            onChange={this.handleChange}
+                            type="radio"
+                          />
+                          <span>female</span>
+                        </label>
+                      </p>
+                      <label htmlFor="description">sex</label>
+                    </div>
+                    <div className="input-field">
+                      {" "}
+                      <p>
+                        <label>
+                          <input
+                            id="civility"
+                            name="civility"
+                            value="Married"
+                            class="with-gap"
+                            onChange={this.handleChange}
+                            type="radio"
+                          />
+                          <span>married</span>
+                        </label>
+                      </p>
+                      <p>
+                        <label>
+                          <input
+                            id="civility"
+                            name="civility"
+                            value="Not Married"
+                            class="with-gap"
+                            onChange={this.handleChange}
+                            type="radio"
+                          />
+                          <span>not married</span>
+                        </label>
+                      </p>
+                      <label htmlFor="description">civility</label>
+                    </div>
+                    <div className="input-field">
+                      <i className="material-icons prefix">description</i>
+                      <textarea
+                        id="description"
+                        name="description"
+                        className="materialize-textarea"
+                        style={{ height: "4rem" }}
+                        value={description}
+                        onChange={this.handleChange}
+                      ></textarea>
+                      <label htmlFor="description">About</label>
+                    </div>
+                    <div className="card-action">
+                      <button
+                        className="waves-effect waves-light btn s12 m8"
+                        style={{ margin: "5px" }}
+                        onClick={this.makeUser}
+                      >
+                        <i className="material-icons right">send</i>Create User
+                      </button>
+                      <button
+                        type="reset"
+                        className="waves-effect red waves-light btn"
+                        onClick={this.resetForm}
+                      >
+                        <i className="material-icons right">clear</i>
+                        Reset
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 export default AboutUs;
