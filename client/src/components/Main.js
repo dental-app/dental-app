@@ -13,11 +13,24 @@ class Main extends Component {
     description: "",
     errorMessage: "",
     successMessage: "",
+    users: [],
   };
   componentDidMount() {
     M.AutoInit();
+    this.getUsers();
   }
 
+  getUsers = () => {
+    axios
+      .get("/users")
+      .then((res) => {
+        this.setState({
+          users: res.data,
+        });
+        console.log(res.data);
+      })
+      .catch((err) => console.log(err));
+  };
   handleChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value,
