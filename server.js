@@ -114,8 +114,8 @@ app.post("/add-user", (req, res) => {
     maturity,
     sex,
     civility,
-    description,
     data,
+    description,
   } = req.body;
   const validateDateTime = async (date, time) => {
     const existingAppointment = await Appointment.findOne({ date, time });

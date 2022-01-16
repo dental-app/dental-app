@@ -18,6 +18,11 @@ class AboutUs extends Component {
     description: "",
     errorMessage: "",
     successMessage: "",
+    errMsg: "",
+    successMsg: "",
+    selectedFile: "",
+    previewSource: "",
+    fileInputState: "",
   };
   componentDidMount() {
     M.AutoInit();
@@ -30,9 +35,55 @@ class AboutUs extends Component {
     // console.log(this.state.maturity);
   };
 
+  handleFileInputChange = (e) => {
+    const file = e.target.files[0];
+    this.previewFile(file);
+    this.setState({
+      selectedFile: file,
+      fileInputState: e.target.value,
+    });
+  };
+
+  previewFile = (file) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      this.setState({
+        previewSource: reader.result,
+      });
+    };
+  };
+  handleSubmitFile = (e) => {
+    e.preventDefault();
+    if (!this.state.selectedFile) return;
+    const reader = new FileReader();
+    reader.readAsDataURL(this.state.selectedFile);
+    reader.onloadend = () => {
+      this.uploadImage(reader.result);
+    };
+    reader.onerror = () => {
+      console.error("AHHHHHHHH!! ERROR!! ERROR!!");
+      this.setState({
+        errMsg: "something went wrong!",
+      });
+    };
+  };
+  uploadImage = async (base64EncodedImage) => {
+    try {
+      await fetch("/api/upload", {
+        method: "POST",
+        body: JSON.stringify({ data: base64EncodedImage }),
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (err) {
+      console.error(err);
+      this.setState({
+        errMsg: "something went wrong!",
+      });
+    }
+  };
   makeUser = (e) => {
     e.preventDefault();
-
     const {
       fullname,
       cin,
@@ -79,6 +130,9 @@ class AboutUs extends Component {
           sex: "",
           civility: "",
           description: "",
+          fileInputState: "",
+          previewSource: "",
+          successMsg: "Image uploaded successfully",
         });
         M.toast({
           html: this.state.successMessage,
@@ -301,6 +355,15 @@ class AboutUs extends Component {
                         </label>
                       </p>
                       <label htmlFor="description">civility</label>
+                    </div>
+                    <div class="file-field input-field">
+                      <div class="btn">
+                        <span>File</span>
+                        <input type="file" />
+                      </div>
+                      <div class="file-path-wrapper">
+                        <input class="file-path validate" type="text" />
+                      </div>
                     </div>
                     <div className="input-field">
                       <i className="material-icons prefix">description</i>
