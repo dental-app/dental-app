@@ -11,6 +11,7 @@ class User extends Component {
       users: [],
       filterName: "",
       filterDate: "",
+      dataImage: "",
       user: {},
       loading: false,
       isAuthenticated: false,
@@ -72,6 +73,22 @@ class User extends Component {
       })
       .catch((err) => console.log(err));
   };
+  uploadImage = (e) => {
+    const files = e.target.files[0];
+    const formData = new FormData();
+    formData.append("upload_preset", "nwaspat2");
+    formData.append("file", files);
+    axios
+      .post("https://api.cloudinary.com/v1_1/danfous/image/upload", formData)
+      .then((res) => {
+        this.setState({
+          dataImage: res.data.secure_url,
+        });
+        console.log("image", this.state.data);
+      })
+      .catch((err) => console.log(err));
+  };
+
   editUser = () => {
     const { _id } = this.state.user;
     const updatedValues = {
@@ -86,6 +103,7 @@ class User extends Component {
       maturity: this.maturityInput.current.value,
       sex: this.sexInput.current.value,
       civility: this.civilityInput.current.value,
+      data: this.state.dataImage,
       description: this.descriptionInput.current.value,
     };
     axios
@@ -106,6 +124,7 @@ class User extends Component {
         newItems[objToEditIndex].maturity = updatedValues.maturity;
         newItems[objToEditIndex].sex = updatedValues.sex;
         newItems[objToEditIndex].civility = updatedValues.civility;
+        newItems[objToEditIndex].data = updatedValues.data;
         newItems[objToEditIndex].description = updatedValues.description;
         this.setState({ users: newItems });
 
@@ -115,7 +134,7 @@ class User extends Component {
   };
   render() {
     let nr = 1;
-    const { filterName, filterDate, loading, user } = this.state;
+    const { filterName, filterDate, loading, user, dataImage } = this.state;
     const {
       fullname,
       cin,
@@ -128,6 +147,7 @@ class User extends Component {
       maturity,
       sex,
       civility,
+      data,
       description,
     } = this.state.user;
     return (
@@ -268,6 +288,23 @@ class User extends Component {
               <h5 className="center">Client: {fullname} </h5>
               <form>
                 <div className="row">
+                  <div className="center">
+                    <img
+                      alt=""
+                      className="materialboxed"
+                      height="100%"
+                      width="100%"
+                      src={dataImage ? dataImage : data}
+                    />
+                  </div>
+                  <div className="center file-field input-field">
+                    <div className="btn">
+                      <span>Edit Image</span>
+                      <input type="file" onChange={this.uploadImage} />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
                   <div className="input-field col m8 offset-m2">
                     <i className="material-icons prefix">account_circle</i>
                     <input
@@ -278,7 +315,6 @@ class User extends Component {
                       defaultValue={fullname}
                       ref={this.fullnameInput}
                     />
-                      
                   </div>
 
                   <div className="input-field col m8 offset-m2">
@@ -291,7 +327,6 @@ class User extends Component {
                       defaultValue={cellphone}
                       ref={this.cellphoneInput}
                     />
-                    <label htmlFor="editFullname">Cellphone</label>
                   </div>
 
                   <div className="input-field col m8 offset-m2">
@@ -304,7 +339,6 @@ class User extends Component {
                       defaultValue={cin}
                       ref={this.cinInput}
                     />
-                    <label htmlFor="editFullname">CIN</label>
                   </div>
 
                   <div className="input-field col m8 offset-m2">
@@ -317,7 +351,6 @@ class User extends Component {
                       defaultValue={town}
                       ref={this.townInput}
                     />
-                    <label htmlFor="editFullname">Town</label>
                   </div>
 
                   <div className="input-field col m8 offset-m2">
@@ -330,7 +363,6 @@ class User extends Component {
                       defaultValue={adress}
                       ref={this.adressInput}
                     />
-                    <label htmlFor="editFullname">Adress</label>
                   </div>
 
                   <div className="input-field col m8 offset-m2">
@@ -343,7 +375,6 @@ class User extends Component {
                       defaultValue={postalCode}
                       ref={this.postalCodeInput}
                     />
-                    <label htmlFor="editFullname">Postal Code</label>
                   </div>
 
                   <div className="input-field col m8 offset-m2">
@@ -356,7 +387,6 @@ class User extends Component {
                       defaultValue={maturity}
                       ref={this.maturityInput}
                     />
-                    <label htmlFor="editFullname">Maturity</label>
                   </div>
 
                   <div className="input-field col m8 offset-m2">
@@ -369,7 +399,6 @@ class User extends Component {
                       defaultValue={sex}
                       ref={this.sexInput}
                     />
-                    <label htmlFor="editFullname">Sex</label>
                   </div>
 
                   <div className="input-field col m8 offset-m2">
@@ -382,7 +411,6 @@ class User extends Component {
                       defaultValue={civility}
                       ref={this.civilityInput}
                     />
-                    <label htmlFor="editFullname">Civility</label>
                   </div>
 
                   <div className="input-field col m8 offset-m2">
@@ -421,7 +449,6 @@ class User extends Component {
                       defaultValue={description}
                       ref={this.descriptionInput}
                     />
-                    <label htmlFor="editFullname">Description</label>
                   </div>
                 </div>
               </form>

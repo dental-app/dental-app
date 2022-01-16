@@ -15,6 +15,7 @@ class AboutUs extends Component {
     maturity: "",
     sex: "",
     civility: "",
+    data: "",
     description: "",
     errorMessage: "",
     successMessage: "",
@@ -68,20 +69,22 @@ class AboutUs extends Component {
       });
     };
   };
-  uploadImage = async (base64EncodedImage) => {
-    try {
-      await fetch("/api/upload", {
-        method: "POST",
-        body: JSON.stringify({ data: base64EncodedImage }),
-        headers: { "Content-Type": "application/json" },
-      });
-    } catch (err) {
-      console.error(err);
-      this.setState({
-        errMsg: "something went wrong!",
-      });
-    }
+  uploadImage = (e) => {
+    const files = e.target.files[0];
+    const formData = new FormData();
+    formData.append("upload_preset", "nwaspat2");
+    formData.append("file", files);
+    axios
+      .post("https://api.cloudinary.com/v1_1/danfous/image/upload", formData)
+      .then((res) => {
+        this.setState({
+          data: res.data.secure_url,
+        });
+        console.log("image", this.state.data);
+      })
+      .catch((err) => console.log(err));
   };
+
   makeUser = (e) => {
     e.preventDefault();
     const {
@@ -96,6 +99,7 @@ class AboutUs extends Component {
       maturity,
       sex,
       civility,
+      data,
       description,
     } = this.state;
 
@@ -111,6 +115,7 @@ class AboutUs extends Component {
       maturity,
       sex,
       civility,
+      data,
       description,
     };
     axios
@@ -129,6 +134,7 @@ class AboutUs extends Component {
           maturity: "",
           sex: "",
           civility: "",
+          data: "",
           description: "",
           fileInputState: "",
           previewSource: "",
@@ -159,6 +165,7 @@ class AboutUs extends Component {
       maturity: "",
       sex: "",
       civility: "",
+      data: "",
       description: "",
     });
   };
@@ -287,7 +294,7 @@ class AboutUs extends Component {
                             id="maturity"
                             name="maturity"
                             value="Kid"
-                            class="with-gap"
+                            className="with-gap"
                             onChange={this.handleChange}
                             type="radio"
                           />
@@ -304,7 +311,7 @@ class AboutUs extends Component {
                             id="sex"
                             name="sex"
                             value="Male"
-                            class="with-gap"
+                            className="with-gap"
                             onChange={this.handleChange}
                             type="radio"
                           />
@@ -317,7 +324,7 @@ class AboutUs extends Component {
                             id="sex"
                             name="sex"
                             value="Female"
-                            class="with-gap"
+                            className="with-gap"
                             onChange={this.handleChange}
                             type="radio"
                           />
@@ -334,7 +341,7 @@ class AboutUs extends Component {
                             id="civility"
                             name="civility"
                             value="Married"
-                            class="with-gap"
+                            className="with-gap"
                             onChange={this.handleChange}
                             type="radio"
                           />
@@ -347,7 +354,7 @@ class AboutUs extends Component {
                             id="civility"
                             name="civility"
                             value="Not Married"
-                            class="with-gap"
+                            className="with-gap"
                             onChange={this.handleChange}
                             type="radio"
                           />
@@ -356,14 +363,21 @@ class AboutUs extends Component {
                       </p>
                       <label htmlFor="description">civility</label>
                     </div>
-                    <div class="file-field input-field">
-                      <div class="btn">
+                    <div className="file-field input-field">
+                      <div className="btn">
                         <span>File</span>
-                        <input type="file" />
+                        <input type="file" onChange={this.uploadImage} />
                       </div>
-                      <div class="file-path-wrapper">
-                        <input class="file-path validate" type="text" />
+                      <div className="file-path-wrapper">
+                        <input className="file-path validate" type="text" />
                       </div>
+                      <img
+                        alt=""
+                        className="w-100 text text-center mt-2"
+                        height="150"
+                        width="150"
+                        src={this.state.data}
+                      />
                     </div>
                     <div className="input-field">
                       <i className="material-icons prefix">description</i>

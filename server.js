@@ -66,6 +66,7 @@ app.put("/user/:id", (req, res) => {
     maturity,
     sex,
     civility,
+    data,
     description,
   } = req.body;
   User.findOneAndUpdate(req.params.id, {
@@ -80,9 +81,9 @@ app.put("/user/:id", (req, res) => {
     maturity,
     sex,
     civility,
+    data,
     description,
   })
-
     .then((user) => res.json({ msg: "User edited succesfully" }))
     .catch((err) =>
       res.status(500).json({ msg: "Something went wrong. Please try again." })
@@ -114,15 +115,12 @@ app.post("/add-user", (req, res) => {
     maturity,
     sex,
     civility,
-    data,
     description,
+    data,
   } = req.body;
+  console.log(req.body);
   const validateDateTime = async (date, time) => {
     const existingAppointment = await Appointment.findOne({ date, time });
-    const uploadResponse = await cloudinary.uploader.upload(data, {
-      upload_preset: "Aymen",
-    });
-    console.log(uploadResponse);
     if (existingAppointment) {
       res.status(400).json({
         msg: "Please choose another date or time. This one is not available.",
@@ -134,7 +132,6 @@ app.post("/add-user", (req, res) => {
 
   validateDateTime(date, time);
   const saveUser = () => {
-    //Construct appointment
     const newUser = new User({
       fullname,
       cin,
@@ -147,6 +144,7 @@ app.post("/add-user", (req, res) => {
       maturity,
       sex,
       civility,
+      data,
       description,
     });
     // add to database

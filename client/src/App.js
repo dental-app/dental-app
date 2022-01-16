@@ -11,7 +11,7 @@ import AboutUs from "./components/AboutUs";
 import Footer from "./components/Footer";
 import User from "./components/User";
 import NotFound from "./components/NotFound";
-
+import Calander from "./components/Calander";
 class App extends Component {
   state = {
     isAuthenticated: false,
@@ -29,6 +29,8 @@ class App extends Component {
           <Route exact path="/dashboard" component={Dashboard} />
           <Route exact path="/about" component={AboutUs} />
           <Route exact path="/user" component={User} />
+          <Route exact path="/calander" component={Calander} />
+
 
           <Route
             exact

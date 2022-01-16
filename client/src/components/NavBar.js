@@ -60,10 +60,13 @@ class NavBar extends Component {
                     <Link to="/dashboard">Manage Appointments</Link>
                   </li>
                   <li>
-                    <Link to="/about">Create User</Link>
+                    <Link to="/about">Create Patient</Link>
                   </li>
                   <li>
                     <Link to="/user">Patients</Link>
+                  </li>
+                  <li>
+                    <Link to="/calander">Appointments</Link>
                   </li>
                   {isAuthenticated ? (
                     <li>
