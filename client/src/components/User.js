@@ -10,8 +10,8 @@ class User extends Component {
     this.state = {
       users: [],
       filterName: "",
-      filterDate: "",
       dataImage: "",
+      filterDescription: "",
       user: {},
       loading: false,
       isAuthenticated: false,
@@ -38,13 +38,6 @@ class User extends Component {
   }
 
   getUsers = () => {
-    const token = localStorage.getItem("lcl-stg-tkn");
-    // if (token) {
-    //   this.setState({
-    //     loading: true,
-    //     isAuthenticated: true
-    //   });
-
     axios
       .get("/users")
       .then((res) => {
@@ -55,9 +48,6 @@ class User extends Component {
         console.log(res.data);
       })
       .catch((err) => console.log(err));
-    // } else {
-    //   this.props.history.push("/login");
-    // }
   };
   deleteUser = (id) => {
     axios
@@ -134,7 +124,14 @@ class User extends Component {
   };
   render() {
     let nr = 1;
-    const { filterName, filterDate, loading, user, dataImage } = this.state;
+    const {
+      filterName,
+      filterDate,
+      filterDescription,
+      loading,
+      user,
+      dataImage,
+    } = this.state;
     const {
       fullname,
       cin,
@@ -154,7 +151,7 @@ class User extends Component {
       <div className="row dashboard">
         <div className="col m10 offset-m1">
           <div className="green-text darken-2">
-            <h4> Manage Users</h4>
+            <h4> Manage patients</h4>
             <h6>Total user: {this.state.users.length}</h6>
           </div>
           <div className="row">
@@ -171,15 +168,18 @@ class User extends Component {
                 name
               </label>
             </div>
+
             <div className="input-field col">
               <input
-                id="date"
+                id="description"
                 type="text"
                 className="validate"
-                value={filterDate}
-                onChange={(e) => this.setState({ filterDate: e.target.value })}
+                value={filterDescription}
+                onChange={(e) =>
+                  this.setState({ filterDescription: e.target.value })
+                }
               />
-              <label htmlFor="date">Search by date</label>
+              <label htmlFor="description">Search by description</label>
             </div>
           </div>
           {loading ? (
@@ -216,6 +216,13 @@ class User extends Component {
                           .includes(filterName)
                       : null
                   )
+                  .filter((key) =>
+                    key.description
+                      .toString()
+                      .toLowerCase()
+                      .includes(filterDescription)
+                  )
+
                   .map((user) =>
                     user.fullname ? (
                       <tr key={user._id}>

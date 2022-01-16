@@ -17,6 +17,7 @@ class Dashboard extends Component {
     };
     this.dateInput = React.createRef();
     this.timeInput = React.createRef();
+    this.restInput = React.createRef();
   }
   componentDidMount() {
     M.AutoInit();
@@ -64,6 +65,7 @@ class Dashboard extends Component {
     const updatedValues = {
       date: this.dateInput.current.value,
       time: this.timeInput.current.value,
+      rest: this.restInput.current.value,
     };
 
     axios
@@ -75,6 +77,8 @@ class Dashboard extends Component {
         const newItems = [...this.state.appointments];
         newItems[objToEditIndex].date = updatedValues.date;
         newItems[objToEditIndex].time = updatedValues.time;
+        newItems[objToEditIndex].rest = updatedValues.rest;
+
         this.setState({ appointments: newItems });
 
         M.toast({ html: res.data.msg, classes: "green darken-1 rounded" });
@@ -84,7 +88,7 @@ class Dashboard extends Component {
   render() {
     let nr = 1;
     const { filterName, filterDate, loading, appointment } = this.state;
-    const { fullname, date, time } = this.state.appointment;
+    const { fullname, date, time, rest } = this.state.appointment;
     return (
       <div className="row dashboard">
         <div className="col m10 offset-m1">
@@ -131,6 +135,8 @@ class Dashboard extends Component {
                   <th>Date</th>
                   <th>Price</th>
                   <th>Time</th>
+                  <th style={{ width: "300px" }}>Rest</th>
+
                   <th style={{ width: "300px" }}>Description</th>
                   <th>Actions</th>
                 </tr>
@@ -149,6 +155,8 @@ class Dashboard extends Component {
                       <td>{appointment.date}</td>
                       <td>{appointment.price}</td>
                       <td>{appointment.time}</td>
+                      <td>{appointment.rest}</td>
+
                       <td>{appointment.description}</td>
                       <td>
                         <button
@@ -207,6 +215,18 @@ class Dashboard extends Component {
               <form>
                 <div className="row">
                   <div className="input-field col m8 offset-m2">
+                    <i className="material-icons prefix">attach_money</i>
+                    <input
+                      id="editDate"
+                      name="Rest"
+                      type="number"
+                      className="validate"
+                      defaultValue={rest}
+                      ref={this.restInput}
+                    />
+                    <label htmlFor="editDate">Rest</label>
+                  </div>
+                  <div className="input-field col m8 offset-m2">
                     <i className="material-icons prefix">event</i>
                     <input
                       id="editDate"
@@ -218,6 +238,7 @@ class Dashboard extends Component {
                     />
                     <label htmlFor="editDate">Date</label>
                   </div>
+
                   <div className="input-field col m8 offset-m2">
                     <i className="material-icons prefix">access_time</i>
                     <input

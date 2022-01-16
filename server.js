@@ -201,9 +201,10 @@ app.put("/appointment/:id", (req, res) => {
   Appointment.findById(req.params.id)
     .then((appointment) => {
       //New values
-      const { date, time } = req.body;
+      const { date, time, rest } = req.body;
       (appointment.date = date),
         (appointment.time = time),
+        (appointment.rest = rest),
         appointment
           .save()
           .then((appointment) =>
