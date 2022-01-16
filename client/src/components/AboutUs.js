@@ -62,7 +62,7 @@ class AboutUs extends Component {
       this.uploadImage(reader.result);
     };
     reader.onerror = () => {
-      console.error("AHHHHHHHH!! ERROR!! ERROR!!");
+      console.error("AHHHHHHHH!! ERROR!! !!");
       this.setState({
         errMsg: "something went wrong!",
       });
