@@ -29,6 +29,15 @@ mongoose
 //@route GET /appointments
 //@desc  Get all appointments
 //@access Private
+app.get("/user/:id", (req, res) => {
+  // const userId = req.params.id;
+  User.findById(req.params.id)
+    .then((user) => {
+      res.send(user);
+    })
+    .catch((error) => console.log(error));
+});
+
 app.get("/appointments", (req, res) => {
   Appointment.find()
     .sort({ date: 1 })

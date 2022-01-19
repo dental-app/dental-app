@@ -12,6 +12,7 @@ import Footer from "./components/Footer";
 import User from "./components/User";
 import NotFound from "./components/NotFound";
 import Calander from "./components/Calander";
+import Profile from "./components/Profile";
 class App extends Component {
   state = {
     isAuthenticated: false,
@@ -30,7 +31,11 @@ class App extends Component {
           <Route exact path="/about" component={AboutUs} />
           <Route exact path="/user" component={User} />
           <Route exact path="/calander" component={Calander} />
-
+          <Route
+            exact
+            path="/profile/:id"
+            render={(props) => <Profile {...props} />}
+          />
 
           <Route
             exact

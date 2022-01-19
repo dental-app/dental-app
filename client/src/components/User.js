@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import M from "materialize-css/dist/js/materialize.min.js";
 import spinner from "../images/loading.gif";
 
@@ -36,6 +36,10 @@ class User extends Component {
     M.AutoInit();
     this.getUsers();
   }
+
+  handleClick = (id) => {
+    this.props.history.push(`/profile/${id}`);
+  };
 
   getUsers = () => {
     axios
@@ -187,7 +191,7 @@ class User extends Component {
               <img src={spinner} alt="spiner" />
             </div>
           ) : (
-            <table className="striped responsive-table blue-grey darken-2 white-text">
+            <table className="responsive-table blue-grey darken-2 white-text highlight">
               <thead>
                 <tr>
                   <th>No.</th>
@@ -225,7 +229,10 @@ class User extends Component {
 
                   .map((user) =>
                     user.fullname ? (
-                      <tr key={user._id}>
+                      <tr
+                        key={user._id}
+                        onClick={() => this.handleClick(user._id)}
+                      >
                         <td>{nr++}</td>
                         <td>{user.fullname}</td>
                         <td>{user.cellphone}</td>
@@ -483,4 +490,4 @@ class User extends Component {
   }
 }
 
-export default User;
+export default withRouter(User);
