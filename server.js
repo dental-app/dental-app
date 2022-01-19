@@ -163,10 +163,10 @@ app.post("/add-appointment", (req, res) => {
   }
 
   const validateDateTime = async (date, time) => {
-    const existingAppointment = await Appointment.findOne({ date, time });
+    const existingAppointment = await Appointment.findOne({ time });
     if (existingAppointment) {
       res.status(400).json({
-        msg: "Please choose another date or time. This one is not available.",
+        msg: "Please choose another time. This one is not available.",
       });
     } else {
       saveAppointment();
