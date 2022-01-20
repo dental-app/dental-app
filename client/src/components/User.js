@@ -230,8 +230,8 @@ class User extends Component {
                   .map((user) =>
                     user.fullname ? (
                       <tr
-                        key={user._id}
                         onClick={() => this.handleClick(user._id)}
+                        key={user._id}
                       >
                         <td>{nr++}</td>
                         <td>{user.fullname}</td>
@@ -249,7 +249,7 @@ class User extends Component {
                           <button
                             className="waves-effect red waves-light btn modal-trigger"
                             href="#deleteModal"
-                            onClick={() => this.setState({ user })}
+                            onClick={() => this.deleteUser(user._id)}
                           >
                             <i className="material-icons right">delete</i>
                             Delete{" "}
@@ -259,7 +259,7 @@ class User extends Component {
                           <button
                             className="waves-effect waves-light btn modal-trigger"
                             href="#editModal"
-                            onClick={() => this.setState({ user })}
+                            onClick={() => this.editUser()}
                           >
                             <i className="material-icons right">edit</i>
                             Edit

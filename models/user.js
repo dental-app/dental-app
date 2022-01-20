@@ -39,6 +39,7 @@ const UserSchema = new Schema({
   description: {
     type: String,
   },
+  appointments: [{ type: mongoose.Schema.Types.ObjectId, ref: "appointment" }],
 });
 
 module.exports = User = mongoose.model("user", UserSchema);

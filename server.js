@@ -32,6 +32,7 @@ mongoose
 app.get("/user/:id", (req, res) => {
   // const userId = req.params.id;
   User.findById(req.params.id)
+    .populate("appointment")
     .then((user) => {
       res.send(user);
     })
@@ -166,6 +167,7 @@ app.post("/add-user", (req, res) => {
   };
 });
 app.post("/add-appointment", (req, res) => {
+  const ids = req.params.id;
   const { fullname, cellphone, price, date, time, description } = req.body;
   if (!fullname || !cellphone || !date || !time || !description) {
     return res.status(400).json({ msg: "All fields are required" });
@@ -196,6 +198,20 @@ app.post("/add-appointment", (req, res) => {
     // add to database
     newAppointment
       .save()
+      .then(async (appointment) => {
+        try {
+          const userById = await User.findById(id);
+          if (!userById) res.json({ msg: "Appointment added succesfully" });
+          if (userById.appointments) {
+            userById.appointments.push(appointment);
+            await userById.save();
+          }
+          const newUser = await User.updateOne({ appointments: [appointment] });
+          await newUser.save();
+        } catch (error) {
+          console.log(error);
+        }
+      })
       .then((appointment) => res.json({ msg: "Appointment added succesfully" }))
       .catch((err) =>
         res.status(500).json({ msg: "Something went wrong. Please try again." })
